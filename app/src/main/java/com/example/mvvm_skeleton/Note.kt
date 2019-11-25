@@ -3,14 +3,18 @@ package com.example.mvvm_skeleton
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.room.*
+import androidx.sqlite.db.SupportSQLiteDatabase
+import org.jetbrains.anko.doAsync
 
 @Entity (tableName = "note_table")
 data class Note (
-    @PrimaryKey(autoGenerate = true) private var id: Int,
-    private var title: String,
-    private var description: String,
-    private var priority: Int
+    @PrimaryKey(autoGenerate = true) var id: Int,
+    var title: String,
+    var description: String,
+    var priority: Int
 )
+
+
 
 @Dao
 interface NoteDao {
@@ -35,7 +39,7 @@ interface NoteDao {
 @Database(entities = [Note::class], version = 1)
 abstract class NoteDatabase: RoomDatabase() {
 
-    abstract fun noteDo(): NoteDao
+    abstract fun noteDao(): NoteDao
 
     companion object{
         private var instance: NoteDatabase? = null
@@ -47,11 +51,29 @@ abstract class NoteDatabase: RoomDatabase() {
                         instance = Room.databaseBuilder(
                             context,
                             NoteDatabase::class.java, "note_database")
+                            .addCallback(object : Callback(){
+                                override fun onCreate(db: SupportSQLiteDatabase) {
+                                    super.onCreate(db)
+                                    //Moving to a new thread
+                                    doAsync {
+                                        populateDatabase(instance!!)
+                                    }
+                                }
+                            })
                             .build()
                     }
                 }
             }
             return instance
         }
+
+        fun populateDatabase(db: NoteDatabase){
+            val noteDao = db.noteDao()
+
+            noteDao.insert(Note(1, "Title 1", "Description 2", 1))
+            noteDao.insert(Note(2, "Title 2", "Description 2", 1))
+            noteDao.insert(Note(3, "Title 3", "Description 2", 1))
+        }
+
     }
 }

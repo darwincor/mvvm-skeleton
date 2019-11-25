@@ -28,6 +28,7 @@ dependencies {
 
     def lifecycle_version = "2.1.0"
     def room_version = "2.2.1"
+    def anko_version = "0.10.4"
 
     //ViewModel and LiveData
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
@@ -36,6 +37,12 @@ dependencies {
     //Room
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
+
+    //Anko
+    implementation "org.jetbrains.anko:anko-commons:$anko_version"
+
+    //CardView
+    implementation "androidx.cardview:cardview:1.0.0"
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
